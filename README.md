@@ -408,7 +408,7 @@ All previous tests pass.
 
 Archite
 
-## UC9 – README (Short & Crisp)
+## UC9- Addition of Weight Measurement
 📌 Feature Added
 
 UC9 extends the Quantity Measurement App by introducing a new measurement category: Weight.
