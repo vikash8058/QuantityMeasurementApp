@@ -67,6 +67,7 @@ public class QuantityMeasurementAppTest {
 		assertTrue(l1.equals(l1));
 	}
 
+	// UC4 test cases
 	@Test
 	public void testEquality_YardToYard_SameValue() {
 		Length l1 = new Length(1.0, Length.LengthUnit.YARDS);
