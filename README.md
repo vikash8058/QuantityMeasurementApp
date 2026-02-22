@@ -58,7 +58,7 @@ Pushed & PR created
 Merged into dev
 
 📚 USE CASE IMPLEMENTATION
-🟢 UC1 — Feet Equality
+## 🟢 UC1 — Feet Equality
 🎯 Goal
 
 Compare two Feet measurements for equality.
@@ -91,7 +91,7 @@ Understanding equality contract
 
 First step of TDD
 
-🟢 UC2 — Inches Equality
+## 🟢 UC2 — Inches Equality
 🎯 Goal
 
 Support Inches unit in addition to Feet.
@@ -116,7 +116,7 @@ Feet and Inches had identical logic.
 
 Recognized need for refactoring (DRY violation).
 
-🔵 UC3 — Refactor to Generic Length Class
+## 🔵 UC3 — Refactor to Generic Length Class
 🎯 Goal
 
 Remove duplication by introducing a generic measurement model.
@@ -174,7 +174,7 @@ Domain modeling
 
 DRY principle
 
-🟣 UC4 — Add New Units (Extensibility Proof)
+## 🟣 UC4 — Add New Units (Extensibility Proof)
 🎯 Goal
 
 Prove that the design is scalable by adding new units without modifying core logic.
