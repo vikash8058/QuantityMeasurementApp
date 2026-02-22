@@ -115,3 +115,6 @@ Feet and Inches had identical logic.
 🧠 Learning Outcome
 
 Recognized need for refactoring (DRY violation).
+
+
+Adding features without modifying logic
