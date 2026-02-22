@@ -1,112 +1,70 @@
 package com.apps;
 
-import java.util.Objects;
+public class Length {
 
-/**
- * Immutable value object representing a length. Base unit = INCHES.
- */
-public final class Length {
+    private final double value;
+    private final LengthUnit unit;
 
-	private static final double EPSILON = 1e-6;
+    // Base unit = INCHES
+    public enum LengthUnit {
+        FEET(12.0),
+        INCHES(1.0),
+        YARDS(36.0),
+        CENTIMETERS(0.393701);
 
-	private final double value;
-	private final LengthUnit unit;
+        private final double conversionFactor;
 
-	
-	 // Enum storing conversion factors relative to INCHES.
-	 
-	public enum LengthUnit {
+        LengthUnit(double conversionFactor) {
+            this.conversionFactor = conversionFactor;
+        }
 
-		INCHES(1.0), // Base unit
-		FEET(12.0),
-		YARDS(36.0),
-		CENTIMETERS(0.393701);
+        public double getConversionFactor() {
+            return conversionFactor;
+        }
+    }
 
-		private final double toInchesFactor;
+    public Length(double value, LengthUnit unit) {
+        if (unit == null)
+            throw new IllegalArgumentException("Unit cannot be null");
 
-		LengthUnit(double toInchesFactor) {
-			this.toInchesFactor = toInchesFactor;
-		}
+        if (Double.isNaN(value) || Double.isInfinite(value))
+            throw new IllegalArgumentException("Invalid numeric value");
 
-		public double toInches(double value) {
-			return value * toInchesFactor;
-		}
+        this.value = value;
+        this.unit = unit;
+    }
 
-		public double fromInches(double inches) {
-			return inches / toInchesFactor;
-		}
-	}
+    // Convert to base unit (INCHES)
+    private double convertToBaseUnit() {
+        return value * unit.getConversionFactor();
+    }
 
-	public Length(double value, LengthUnit unit) {
+    private boolean compare(Length other) {
+        double a = this.convertToBaseUnit();
+        double b = other.convertToBaseUnit();
+        return Math.abs(a - b) < 0.0001;
+    }
 
-		if (!Double.isFinite(value)) {
-			throw new IllegalArgumentException("Value must be finite.");
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Length other = (Length) obj;
+        return compare(other);
+    }
 
-		this.unit = Objects.requireNonNull(unit, "Unit cannot be null.");
-		this.value = value;
-	}
+    // 🔵 UC5 NEW FEATURE → Instance conversion
+    public Length convertTo(LengthUnit targetUnit) {
+        if (targetUnit == null)
+            throw new IllegalArgumentException("Target unit cannot be null");
 
-	public double getValue() {
-		return value;
-	}
+        double baseValue = convertToBaseUnit();
+        double convertedValue = baseValue / targetUnit.getConversionFactor();
+        return new Length(convertedValue, targetUnit);
+    }
 
-	public LengthUnit getUnit() {
-		return unit;
-	}
-
-	// Normalize to base unit
-	private double toBaseUnit() {
-		return unit.toInches(value);
-	}
-
-	// ---------------- UC5 STATIC CONVERSION ----------------
-
-	public static double convert(double value, LengthUnit source, LengthUnit target) {
-
-		if (!Double.isFinite(value))
-			throw new IllegalArgumentException("Value must be finite.");
-
-		Objects.requireNonNull(source, "Source unit cannot be null.");
-		Objects.requireNonNull(target, "Target unit cannot be null.");
-
-		double inches = source.toInches(value);
-		return target.fromInches(inches);
-	}
-
-	// Instance conversion
-	public Length convertTo(LengthUnit targetUnit) {
-
-		Objects.requireNonNull(targetUnit, "Target unit cannot be null.");
-
-		double inches = toBaseUnit();
-		double converted = targetUnit.fromInches(inches);
-
-		return new Length(converted, targetUnit);
-	}
-
-	// ---------------- UC4 EQUALITY ----------------
-
-	@Override
-	public boolean equals(Object obj) {
-
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Length))
-			return false;
-
-		Length other = (Length) obj;
-
-		return Math.abs(this.toBaseUnit() - other.toBaseUnit()) < EPSILON;
-	}
-
-	@Override
-	public int hashCode() {
-		return Double.hashCode(toBaseUnit());
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%.6f %s", value, unit);
-	}
+    @Override
+    public String toString() {
+        return value + " " + unit;
+    }
 }
