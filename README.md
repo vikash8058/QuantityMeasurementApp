@@ -173,3 +173,4 @@ Generic design
 Domain modeling
 
 DRY principle
+
