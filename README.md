@@ -682,10 +682,7 @@ Improved maintainability & scalability
 Ready for future arithmetic operations (multiply, modulo, etc.)
 
 
-
-## 📄 UC14 – README (brief)
-
-Title: UC14 – Temperature Measurement (Non-Arithmetic Quantity)
+## UC14 – Temperature Measurement (Non-Arithmetic Quantity)
 
 Overview:
 In this UC we extended the Quantity Measurement App to support Temperature units while enforcing that temperature does NOT support arithmetic operations (add, subtract, divide).
