@@ -1,4 +1,4 @@
-package com.apps;
+package com.apps.core;
 
 @FunctionalInterface
 public interface SupportsArithmetic {
