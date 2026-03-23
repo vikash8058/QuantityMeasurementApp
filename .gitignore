@@ -85,3 +85,7 @@ coverage/
 # Misc
 # ===============================
 *.swp
+
+.factorypath
+.gitattributes
+HELP.md
