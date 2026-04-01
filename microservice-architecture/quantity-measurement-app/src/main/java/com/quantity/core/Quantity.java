@@ -26,7 +26,14 @@ public class Quantity<U extends IMeasurable> {
 	}
 
 	private double roundTwoDecimals(double value) {
-		return Math.round(value * 100.0) / 100.0;
+		if (value == 0) return 0;
+		if (Math.abs(value) < 0.000001) {
+			return Double.parseDouble(String.format("%.10f", value));
+		}
+		if (Math.abs(value) < 0.01) {
+			return Double.parseDouble(String.format("%.6f", value));
+		}
+		return Math.round(value * 10000.0) / 10000.0;
 	}
 
 	private enum ArithmeticOperation {

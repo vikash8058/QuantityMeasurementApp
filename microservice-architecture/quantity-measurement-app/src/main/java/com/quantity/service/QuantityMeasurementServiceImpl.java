@@ -136,11 +136,28 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 		try {
 			if (!q1.getUnit().getClass().equals(q2.getUnit().getClass()))
 				throw new QuantityMeasurementException(
-						"Cannot perform arithmetic between different measurement categories: " + getMeasurementType(q1)
-								+ " and " + getMeasurementType(q2));
-			Quantity result = ((Quantity) q1).add((Quantity) q2);
-			dto.setResultValue(result.getValue());
-			dto.setResultUnit(result.getUnit().getUnitName());
+						"Cannot perform arithmetic between different measurement categories: "
+								+ getMeasurementType(q1) + " and " + getMeasurementType(q2));
+
+			// use targetUnit if provided
+			if (input.getTargetUnit() != null && !input.getTargetUnit().isEmpty()) {
+				// first add in base unit
+				Quantity addResult = ((Quantity) q1).add((Quantity) q2);
+				double baseValue = addResult.getUnit().convertToBaseUnit(addResult.getValue());
+
+				// then convert to target unit manually
+				QuantityDTO targetDTO = new QuantityDTO(0.0, input.getTargetUnit(), input.getThisQuantityDTO().getMeasurementType());
+				Quantity targetQty = (Quantity) convertDtoToModel(targetDTO);
+				double convertedValue = targetQty.getUnit().convertFromBaseUnit(baseValue);
+
+				dto.setResultValue(convertedValue);
+				dto.setResultUnit(targetQty.getUnit().getUnitName());
+			} else {
+				Quantity result = ((Quantity) q1).add((Quantity) q2);
+				dto.setResultValue(result.getValue());
+				dto.setResultUnit(result.getUnit().getUnitName());
+			}
+
 			dto.setResultMeasurementType(getMeasurementType(q1));
 			dto.setError(false);
 		} catch (Exception e) {
@@ -161,11 +178,20 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 		try {
 			if (!q1.getUnit().getClass().equals(q2.getUnit().getClass()))
 				throw new QuantityMeasurementException(
-						"Cannot perform arithmetic between different measurement categories: " + getMeasurementType(q1)
-								+ " and " + getMeasurementType(q2));
-			Quantity result = ((Quantity) q1).subtract((Quantity) q2);
-			dto.setResultValue(result.getValue());
-			dto.setResultUnit(result.getUnit().getUnitName());
+						"Cannot perform arithmetic between different measurement categories: "
+								+ getMeasurementType(q1) + " and " + getMeasurementType(q2));
+
+			if (input.getTargetUnit() != null && !input.getTargetUnit().isEmpty()) {
+				Quantity<?> target = convertDtoToModel(new QuantityDTO(0.0, input.getTargetUnit(), input.getThisQuantityDTO().getMeasurementType()));
+				Quantity result = ((Quantity) q1).subtract((Quantity) q2, target.getUnit());
+				dto.setResultValue(result.getValue());
+				dto.setResultUnit(result.getUnit().getUnitName());
+			} else {
+				Quantity result = ((Quantity) q1).subtract((Quantity) q2);
+				dto.setResultValue(result.getValue());
+				dto.setResultUnit(result.getUnit().getUnitName());
+			}
+
 			dto.setResultMeasurementType(getMeasurementType(q1));
 			dto.setError(false);
 		} catch (Exception e) {
@@ -186,10 +212,25 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 		try {
 			if (!q1.getUnit().getClass().equals(q2.getUnit().getClass()))
 				throw new QuantityMeasurementException(
-						"Cannot perform arithmetic between different measurement categories: " + getMeasurementType(q1)
-								+ " and " + getMeasurementType(q2));
+						"Cannot perform arithmetic between different measurement categories: "
+								+ getMeasurementType(q1) + " and " + getMeasurementType(q2));
+
 			double result = ((Quantity) q1).divide((Quantity) q2);
-			dto.setResultValue(result);
+
+			// convert result to target unit if provided
+			if (input.getTargetUnit() != null && !input.getTargetUnit().isEmpty()) {
+				QuantityDTO resultDTO = new QuantityDTO(result, input.getThisQuantityDTO().getUnit(), input.getThisQuantityDTO().getMeasurementType());
+				QuantityDTO targetDTO = new QuantityDTO(result, input.getTargetUnit(), input.getThisQuantityDTO().getMeasurementType());
+				Quantity resultQty = (Quantity) convertDtoToModel(resultDTO);
+				Quantity targetQty = (Quantity) convertDtoToModel(targetDTO);
+				Quantity converted = resultQty.convertTo(targetQty.getUnit());
+				dto.setResultValue(converted.getValue());
+				dto.setResultUnit(converted.getUnit().getUnitName());
+			} else {
+				dto.setResultValue(result);
+				dto.setResultUnit(q1.getUnit().getUnitName());
+			}
+
 			dto.setResultMeasurementType(getMeasurementType(q1));
 			dto.setError(false);
 		} catch (ArithmeticException e) {
@@ -213,10 +254,25 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 		try {
 			if (!q1.getUnit().getClass().equals(q2.getUnit().getClass()))
 				throw new QuantityMeasurementException(
-						"Cannot perform arithmetic between different measurement categories: " + getMeasurementType(q1)
-								+ " and " + getMeasurementType(q2));
+						"Cannot perform arithmetic between different measurement categories: "
+								+ getMeasurementType(q1) + " and " + getMeasurementType(q2));
+
 			double result = ((Quantity) q1).multiply((Quantity) q2);
-			dto.setResultValue(result);
+
+			// convert result to target unit if provided
+			if (input.getTargetUnit() != null && !input.getTargetUnit().isEmpty()) {
+				QuantityDTO resultDTO = new QuantityDTO(result, input.getThisQuantityDTO().getUnit(), input.getThisQuantityDTO().getMeasurementType());
+				QuantityDTO targetDTO = new QuantityDTO(result, input.getTargetUnit(), input.getThisQuantityDTO().getMeasurementType());
+				Quantity resultQty = (Quantity) convertDtoToModel(resultDTO);
+				Quantity targetQty = (Quantity) convertDtoToModel(targetDTO);
+				Quantity converted = resultQty.convertTo(targetQty.getUnit());
+				dto.setResultValue(converted.getValue());
+				dto.setResultUnit(converted.getUnit().getUnitName());
+			} else {
+				dto.setResultValue(result);
+				dto.setResultUnit(q1.getUnit().getUnitName());
+			}
+
 			dto.setResultMeasurementType(getMeasurementType(q1));
 			dto.setError(false);
 		} catch (Exception e) {
